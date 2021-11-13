@@ -4,6 +4,8 @@ const cors = require('cors');
 const admin = require("firebase-admin");
 require('dotenv').config()
 const { MongoClient } = require('mongodb');
+
+
 const port = process.env.PORT || 5000;
 
 
@@ -42,6 +44,19 @@ async function run(){
         const database = client.db('glamour_world');
         const appointmentsCollection = database.collection('appointments');
         const usersCollection = database.collection('users');
+        const reviewCollection = database.collection('review');
+
+        //Add Review
+        app.post('/review', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.json(result);
+        });
+        app.get('/review', async (req, res) => {
+            const cursor = reviewCollection.find({});
+            const result = await cursor.toArray();
+            res.send(result);
+        });
 
         app.get('/appointments', async (req,res) => {
             const email = req.query.email;
@@ -64,6 +79,8 @@ async function run(){
             const result = await carCollections.insertOne(service);
             res.json(result);
         });
+
+        
 
 
          app.get('/users/:email', async(req,res) => {
